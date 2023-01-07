@@ -29,6 +29,8 @@ app.use(cors({
 app.use(express.urlencoded({extended: true,}));
 app.use(express.json());
 
+console.log("test")
+
 connect();
 
 app.get('/', (req: Request, res: Response) => {
