@@ -1,0 +1,1 @@
+export type GetTagsResponse = { value: string; count: number }[];
