@@ -40,7 +40,7 @@ export const createNewCollection
 
 export const createdCollectionExists = async (_id: mongoose.Types.ObjectId) => {
     try {
-        return await CollectionModel.findOne({_id: _id})
+        return await CollectionModel.findOne(_id)
             .populate<{ topics: TopicSchemaType[] }>('topics')
             .populate<{ owner: UserSchemaType}>('owner');
     } catch (error) {
@@ -50,7 +50,7 @@ export const createdCollectionExists = async (_id: mongoose.Types.ObjectId) => {
 
 export const userCollectionExists = async (id: string) => {
     try {
-        return await CollectionModel.findOne({_id: id,})
+        return await CollectionModel.findOne({id})
             .populate<{ topics: TopicSchemaType[]; }>('topics')
             .populate<{ owner: UserSchemaType; }>('owner');
     } catch (error) {

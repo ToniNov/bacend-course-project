@@ -11,7 +11,7 @@ export const getTopics = async (
 ) => {
     try {
         console.log("rend")
-        const topics = await TopicModel.find( );
+        const topics = await TopicModel.find();
 
         const topicTitles = topics.map(topic => topic.title);
 

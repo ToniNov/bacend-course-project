@@ -96,6 +96,8 @@ export const getCollection = async (
 
         const {id} = req.params;
 
+        console.log(id)
+
         const userCollection = await userCollectionExists(id)
 
         if (!userCollection) return next(new ErrorException(ErrorCode.NotFound));
@@ -180,12 +182,10 @@ export const getPopularCollection = async (
     res: Response<GetUserCollectionsResponseType>,
     next: NextFunction,
 ) => {
-
-    const COLLECTIONS_COUNT = 5;
-
     try {
+        const COLLECTIONS_COUNT = 5;
 
-        const collectionsDb = await CollectionModel.find()
+        const collectionsDb = await CollectionModel.find({})
             .populate<{
                 topics: TopicSchemaType[];
             }>('topics')
@@ -193,16 +193,12 @@ export const getPopularCollection = async (
                 owner: UserSchemaType;
             }>('owner');
 
-        console.log("collectionsDb", collectionsDb)
-
         const collectionItemCount = await Promise.all(
             collectionsDb.map(async ({ id }) => ({
                 id,
                 count: await (await ItemModel.find({ collections: id })).length,
             })),
         );
-
-        console.log("collectionItemCount", collectionItemCount)
 
         collectionItemCount.sort((a, b) => b.count - a.count);
 
@@ -222,10 +218,8 @@ export const getPopularCollection = async (
                 topics: topics.map(topic => topic.title),
             }));
 
-        console.log(fiveCollections)
-
-        res.send(fiveCollections)
-    } catch (error) {
-        return next(new ErrorException(ErrorCode.UnknownError, { error }));
+        res.send(fiveCollections);
+    } catch (e) {
+        return next(new ErrorException(ErrorCode.UnknownError, { e }));
     }
 }

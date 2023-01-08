@@ -72,7 +72,6 @@ export const getLatestTenItems = async (
     next: NextFunction,
 ) => {
     try {
-
         const latestItemsDb =  await findLatestTenItems()
 
         if (!latestItemsDb) return next(new ErrorException(ErrorCode.NotFound));

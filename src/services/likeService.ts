@@ -1,30 +1,25 @@
-import TagModel from "../models/Tag";
+import LikeModel, {LikeSchemaType} from "../models/like";
 import mongoose from "mongoose";
 
-export const findTag = async (tag: string) => {
+export const findLikes = async (id: string) => {
     try {
-        return await TagModel.findOne({ title: tag });
-
+        return await LikeModel.find({item: id});
     } catch (error) {
         throw new Error()
     }
 };
 
-
-export const findAndCreateTagId = async (tags: string[]) => {
+export const createNewLike = async (item: string, user: string) => {
     try {
-        return await Promise.all(
-            tags.map( async tag => {
-                const tagDb = await TagModel.findOne({title: tag});
 
-                if (tagDb) return tagDb._id;
-                const newTag = await TagModel.create({
-                    _id: new mongoose.Types.ObjectId(),
-                    title: tag,
-                });
+        const newLike: LikeSchemaType = {
+            _id: new mongoose.Types.ObjectId(),
+            item: new mongoose.Types.ObjectId(item),
+            user: new mongoose.Types.ObjectId(user),
+        };
 
-                return newTag._id;
-            }))
+        return await LikeModel.create(newLike);
+
     } catch (error) {
         throw new Error()
     }

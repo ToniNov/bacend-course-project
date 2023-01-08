@@ -1,8 +1,8 @@
 import { model, Model, Schema, Types } from 'mongoose';
 
 export type TopicSchemaType = {
-  _id: Types.ObjectId;
-  title: string;
+  _id: Types.ObjectId,
+  title: string,
 }
 
 const TopicSchema = new Schema<TopicSchemaType>(

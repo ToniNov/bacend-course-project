@@ -14,4 +14,6 @@ export enum Path {
     Tag = '/:tag',
     Topics ='/topics',
     Items ='/items',
-}
+    Likes ='/likes',
+    Comments ="/comments",
+};

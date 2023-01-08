@@ -18,6 +18,8 @@ export const findLatestTenItems = async () => {
 
         const itemsLimit = 10;
 
+        console.log("findLatestTenItems")
+
         return await ItemModel.find({})
             .sort({createdAt: -1})
             .limit(itemsLimit)
@@ -30,7 +32,6 @@ export const findLatestTenItems = async () => {
         throw new Error()
     }
 }
-
 
 export const findByLimit = async (tagDb: any, pageNum: number, limitNum: number) => {
     try {
