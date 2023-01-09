@@ -93,10 +93,7 @@ export const getCollection = async (
     next: NextFunction,
 ) => {
     try {
-
         const {id} = req.params;
-
-        console.log(id)
 
         const userCollection = await userCollectionExists(id)
 
@@ -114,6 +111,7 @@ export const getCollection = async (
             topics: topics.map(topic => topic.title),
             itemFields: itemFields.map(({title, type}) => ({title, type})),
         };
+
 
         res.send(collection);
     } catch (error) {

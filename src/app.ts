@@ -19,6 +19,7 @@ import { CommentResponseType } from './types/CommentsType';
 import { UserModel } from './models/User';
 import CommentModel from './models/Comment';
 import {getTopics} from "./controller/topicController";
+import search from "./routes/search";
 
 config();
 mongoose.set('strictQuery', true);
@@ -56,6 +57,7 @@ app.use(Path.Tags, tags)
 app.use(Path.Users, users)
 app.use(Path.Likes, likes)
 app.use(Path.Comments, comments)
+app.use(Path.Search, search)
 
 io.on('connection', socket => {
     socket.on('itemId', (itemId: string) => {

@@ -16,4 +16,5 @@ export enum Path {
     Items ='/items',
     Likes ='/likes',
     Comments ="/comments",
+    Search ="/search",
 };

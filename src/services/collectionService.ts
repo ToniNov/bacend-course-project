@@ -50,7 +50,7 @@ export const createdCollectionExists = async (_id: mongoose.Types.ObjectId) => {
 
 export const userCollectionExists = async (id: string) => {
     try {
-        return await CollectionModel.findOne({id})
+        return await CollectionModel.findOne({_id: id})
             .populate<{ topics: TopicSchemaType[]; }>('topics')
             .populate<{ owner: UserSchemaType; }>('owner');
     } catch (error) {
