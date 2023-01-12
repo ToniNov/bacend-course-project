@@ -85,22 +85,27 @@ export const githubLogin = async (
     try {
         const {code} = req.body;
 
+        console.log("code", req.body)
+
         const gitAccessTokenData = await axios.post(
-            `https://github.com/login/oauth/access_token?client_id=${process.env.GITHUB_CLIENT_ID}&client_secret=${process.env.GITHUB_SECRET}&code=${code}`,
+            `https://github.com/loginnn/oauth/access_token?client_id=${process.env.GITHUB_CLIENT_ID}&client_secret=${process.env.GITHUB_SECRET}&code=${code}`,
             {},
             {
                 headers: {
                     Accept: 'application/json',
+                    withCredentials: true
                 },
             },
         );
 
-        const {
-            data: {email, node_id: password, name},
-        } = await axios.get(`https://api.github.com/user`, {
+        console.log("gitAccessTokenData", gitAccessTokenData)
+
+        const { data:{email, node_id: password, name}} =
+            await axios.get(`https://api.github.com/user`, {
             headers: {
                 Authorization: `Bearer ${gitAccessTokenData.data.access_token}`,
                 Accept: 'application/json',
+                withCredentials: true
             },
         });
 
@@ -128,8 +133,9 @@ export const githubLogin = async (
             access: userWithEmail.access,
             token,
         });
-    } catch (e) {
-        return next(new ErrorException(ErrorCode.UnknownError, {e}));
+    } catch (error) {
+        console.log(error)
+        return next(new ErrorException(ErrorCode.UnknownError, {error}));
     }
 }
 
