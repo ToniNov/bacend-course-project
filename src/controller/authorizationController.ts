@@ -59,21 +59,23 @@ export const login = async (
             return next(new ErrorException(ErrorCode.Unauthenticated));
         }
     }
+
     if (userWithEmail.status === Status.Block) {
         return next(new ErrorException(ErrorCode.Blocked));
     }
-    const validPassword = comparePassword(password, userWithEmail.password);
-    if (!validPassword) {
-        return next(new ErrorException(ErrorCode.Unauthenticated));
-    }
+
     const token = generateAuthToken(userWithEmail);
-    res.send({
+
+    const userAuthObj : LoginResponseBodyType = {
         id: userWithEmail._id.toString(),
         name: userWithEmail.name,
         access: userWithEmail.access,
         token,
-    });
+    }
+
+    res.send(userAuthObj);
 }
+
 
 export const githubLogin = async (
     req: Request<{}, {}, GithubLoginRequestType>,
@@ -111,11 +113,15 @@ export const githubLogin = async (
         if (userWithEmail.status === Status.Block) {
             return next(new ErrorException(ErrorCode.Blocked));
         }
+
         const validPassword = comparePassword(password, userWithEmail.password);
+
         if (!validPassword) {
             return next(new ErrorException(ErrorCode.Unauthenticated));
         }
+
         const token = generateAuthToken(userWithEmail);
+
         res.send({
             id: userWithEmail._id.toString(),
             name: userWithEmail.name,
