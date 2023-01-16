@@ -64,16 +64,22 @@ export const login = async (
         return next(new ErrorException(ErrorCode.Blocked));
     }
 
+    const validPassword = await comparePassword(password, userWithEmail.password);
+
+    if (!validPassword) {
+        return next(new ErrorException(ErrorCode.Unauthenticated));
+    }
+
     const token = generateAuthToken(userWithEmail);
 
-    const userAuthObj : LoginResponseBodyType = {
+    const userAuthData : LoginResponseBodyType = {
         id: userWithEmail._id.toString(),
         name: userWithEmail.name,
         access: userWithEmail.access,
         token,
     }
 
-    res.send(userAuthObj);
+    res.send(userAuthData);
 }
 
 
@@ -85,27 +91,21 @@ export const githubLogin = async (
     try {
         const {code} = req.body;
 
-        console.log("code", req.body)
-
         const gitAccessTokenData = await axios.post(
-            `https://github.com/loginnn/oauth/access_token?client_id=${process.env.GITHUB_CLIENT_ID}&client_secret=${process.env.GITHUB_SECRET}&code=${code}`,
+            `https://github.com/login/oauth/access_token?client_id=${process.env.GITHUB_CLIENT_ID}&client_secret=${process.env.GITHUB_SECRET}&code=${code}`,
             {},
             {
                 headers: {
                     Accept: 'application/json',
-                    withCredentials: true
                 },
             },
         );
 
-        console.log("gitAccessTokenData", gitAccessTokenData)
-
-        const { data:{email, node_id: password, name}} =
+        const {data:{email, node_id: password, name}} =
             await axios.get(`https://api.github.com/user`, {
             headers: {
                 Authorization: `Bearer ${gitAccessTokenData.data.access_token}`,
                 Accept: 'application/json',
-                withCredentials: true
             },
         });
 
@@ -127,12 +127,14 @@ export const githubLogin = async (
 
         const token = generateAuthToken(userWithEmail);
 
-        res.send({
+        const userAuthData : LoginResponseBodyType = {
             id: userWithEmail._id.toString(),
             name: userWithEmail.name,
             access: userWithEmail.access,
             token,
-        });
+        }
+
+        res.send(userAuthData);
     } catch (error) {
         console.log(error)
         return next(new ErrorException(ErrorCode.UnknownError, {error}));
@@ -157,5 +159,4 @@ export const check = async (
         name: userExists.name,
         access: userExists.access,
     });
-
 }

@@ -31,10 +31,11 @@ export const userWithIdExists = async (_id: string): Promise<UserSchemaType | un
 
 export const createUser = async (payload: SignUpRequestBodyType)=> {
     try {
+
         const { email, name, password } = payload
         const status = Status.Active;
         const access = Access.Basic
-        const hashedPassword = passwordHash(password);
+        const hashedPassword = await passwordHash(password);
 
         const userNew = {
             _id: new mongoose.Types.ObjectId(),
