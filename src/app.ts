@@ -5,7 +5,7 @@ import express, {Application, Request, Response} from 'express';
 import mongoose from "mongoose";
 import { Server } from 'socket.io';
 
-import {connect} from './database/db'
+import {connect} from './database/Connection'
 
 import {Path} from "./enum/path";
 import authorization from "./routes/authorization"
@@ -20,6 +20,7 @@ import { UserModel } from './models/User';
 import CommentModel from './models/Comment';
 import {getTopics} from "./controller/topicController";
 import search from "./routes/search";
+import {errorHandler} from "./error-handler/error-handler";
 
 config();
 mongoose.set('strictQuery', true);
@@ -58,6 +59,8 @@ app.use(Path.Users, users)
 app.use(Path.Likes, likes)
 app.use(Path.Comments, comments)
 app.use(Path.Search, search)
+
+app.use(errorHandler);
 
 io.on('connection', socket => {
     socket.on('itemId', (itemId: string) => {

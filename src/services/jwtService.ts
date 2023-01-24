@@ -1,11 +1,11 @@
 import jwt from 'jsonwebtoken';
+
 import { ErrorCode } from '../error-handler/error-code';
 import { ErrorException } from '../error-handler/error-exception';
-import {UserSchemaType} from "../models/User";
-import {Secret} from "../enum/secret";
+import { UserSchemaType } from "../models/User";
 import { TokenPayloadType } from '../types/AuthTypes';
 
-const jwtKey = Secret.Secret;
+const jwtKey = process.env.JWT_SECRET!
 
 export const generateAuthToken = (user: UserSchemaType): string => {
     const { _id, name, access } = user;

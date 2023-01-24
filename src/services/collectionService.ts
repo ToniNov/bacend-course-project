@@ -66,6 +66,7 @@ export const refreshCollection = async (id: string , dbP: dbPayloadType ) => {
         throw new Error()
     }
 }
+
 export const removeCollection = async (id: string) => {
     try {
         return await CollectionModel.deleteMany({ _id: { $in: [id] } })

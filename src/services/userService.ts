@@ -1,9 +1,11 @@
+import mongoose from "mongoose";
+
 import {SignUpRequestBodyType} from "../types/AuthTypes";
 import {Status} from "../enum/status";
 import {Access} from "../enum/access";
 import {passwordHash} from "../utils/password-hash";
 import {UserModel, UserSchemaType} from "../models/User";
-import mongoose from "mongoose";
+
 
 export const userWithEmailExists = async (email: string): Promise<UserSchemaType | undefined | null> => {
     try {
@@ -45,6 +47,7 @@ export const createUser = async (payload: SignUpRequestBodyType)=> {
             access,
             password:hashedPassword,
         };
+
         return await UserModel.create(userNew);
     } catch (error) {
         throw new Error('Err with creating user')

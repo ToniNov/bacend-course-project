@@ -1,5 +1,7 @@
 import {model, Model, Schema, Types} from 'mongoose';
 
+import ItemModel from './Item';
+
 export type FieldTypesType = `number` | 'title' | 'text' | 'date' | 'check';
 
 export type FieldType = {
@@ -34,5 +36,18 @@ const CollectionSchema = new Schema<CollectionSchemaType>(
     },
     { collection: 'collections', timestamps: true },
 );
+
+CollectionSchema.pre<any>('deleteMany', async function cb(next) {
+
+    const deletedCollectionIdsArray = this._conditions._id.$in;
+    const deletedItemIds = (
+        await ItemModel.find({
+            collections: { $in: deletedCollectionIdsArray },
+        })
+    ).map(item => item.id);
+
+    await ItemModel.deleteMany({ _id: { $in: deletedItemIds } });
+    next();
+});
 
 export const CollectionModel: Model<CollectionSchemaType> = model('Collection', CollectionSchema);

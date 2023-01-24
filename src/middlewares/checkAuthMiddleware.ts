@@ -1,9 +1,12 @@
-import { Request, Response, NextFunction } from 'express';
+import {Request, Response, NextFunction} from 'express';
 import mongoose from 'mongoose';
-import { ErrorCode } from '../error-handler/error-code';
-import { ErrorException } from '../error-handler/error-exception';
+
+import {ErrorCode} from '../error-handler/error-code';
+import {ErrorException} from '../error-handler/error-exception';
 import {verifyToken} from "../services/jwtService";
 import {UserModel} from "../models/User";
+import {Access} from "../enum/access";
+import {Status} from "../enum/status";
 
 const TOKEN_START_INDEX = 7;
 
@@ -17,7 +20,7 @@ export const checkAuthMiddleware = (withAccessControl: boolean = false) => {
 
             try {
                 const tokenPayload = verifyToken(token);
-                const { _id } = tokenPayload;
+                const {_id} = tokenPayload;
 
                 const userExists = await UserModel.findOne({
                     _id: new mongoose.Types.ObjectId(_id),
@@ -27,11 +30,11 @@ export const checkAuthMiddleware = (withAccessControl: boolean = false) => {
                     return next(new ErrorException(ErrorCode.Unauthenticated));
                 }
 
-                if (userExists.status === 'blocked') {
+                if (userExists.status === Status.Block) {
                     return next(new ErrorException(ErrorCode.Blocked));
                 }
 
-                if (withAccessControl && userExists.access === 'basic') {
+                if (withAccessControl && userExists.access === Access.Basic) {
                     return next(new ErrorException(ErrorCode.NotAllowed));
                 }
 

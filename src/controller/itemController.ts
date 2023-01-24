@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import {NextFunction, Request, Response} from 'express';
+
 import {
     CreateItemRequestType,
     CreateItemResponseType,
@@ -10,12 +11,11 @@ import {
     ItemType,
     UpdateItemRequestBodyType
 } from "../types/ItemTypes";
+import {TagSchemaType} from "../models/Tag";
 import ItemModel, {ItemSchemaType} from "../models/Item";
 import {ErrorException} from "../error-handler/error-exception";
 import {ErrorCode} from "../error-handler/error-code";
-import TagModel, {TagSchemaType} from "../models/Tag";
 import {findAndCreateTagId, findTag} from "../services/tagService";
-import {CollectionSchemaType} from "../models/Collection";
 import {
     countCollection,
     countItem,
@@ -23,7 +23,6 @@ import {
     findItemById, findLatestTenItems,
     findLimitCollection
 } from "../services/itemService";
-
 
 const DEFAULT_PAGE_LIMIT = 5;
 
@@ -34,6 +33,8 @@ export const createItem = async (
 ) => {
     try {
         const {title, tags, itemFields, collection} = req.body.item;
+
+        console.log(req.body.item)
 
         const tagsDbObjectIds = await findAndCreateTagId(tags)
 
@@ -72,7 +73,7 @@ export const getLatestTenItems = async (
     next: NextFunction,
 ) => {
     try {
-        const latestItemsDb =  await findLatestTenItems()
+        const latestItemsDb = await findLatestTenItems()
 
         if (!latestItemsDb) return next(new ErrorException(ErrorCode.NotFound));
 
@@ -203,6 +204,7 @@ export const getCollectionItems = async (
 ) => {
     try {
         const {id} = req.params;
+
         const {limit = DEFAULT_PAGE_LIMIT, page = 1} = req.query;
 
         const pageNum = Number(page);
@@ -222,6 +224,8 @@ export const getCollectionItems = async (
             })),
             tags: item.tags.map(tag => tag.title),
         }));
+
+        console.log("items, count", items, count)
 
         res.send({items, count});
     } catch (error) {

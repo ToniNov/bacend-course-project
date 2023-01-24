@@ -1,5 +1,6 @@
 import mongoose, {model, Model, Schema} from "mongoose";
 import { UserAccessType, UserStatusType } from "../types/AuthTypes";
+import { CollectionModel } from "./Collection";
 
 export type UserSchemaType = {
     _id: mongoose.Types.ObjectId
@@ -21,5 +22,18 @@ const UserSchema = new Schema<UserSchemaType>(
     },
     {collection: 'users', timestamps: true},
 );
+
+UserSchema.pre<any>('deleteMany', async function cb(next) {
+
+    const deletedUserIdsArray = this._conditions._id.$in;
+    const deletedCollectionsIdsArray = (
+        await CollectionModel.find({
+            owner: { $in: deletedUserIdsArray },
+        })
+    ).map(collection => collection.id);
+
+    await CollectionModel.deleteMany({ _id: { $in: deletedCollectionsIdsArray } });
+    next();
+});
 
 export const UserModel: Model<UserSchemaType> = model('User', UserSchema);

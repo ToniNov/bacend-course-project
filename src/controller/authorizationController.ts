@@ -47,41 +47,44 @@ export const login = async (
     res: Response<LoginResponseBodyType>,
     next: NextFunction,
 ) => {
-    const {email, password, googleData} = req.body;
+    try {
+        const {email, password, googleData} = req.body;
 
-    let userWithEmail = await userWithEmailExists(email)
+        let userWithEmail = await userWithEmailExists(email)
 
-    if (!userWithEmail) {
-        if (googleData) {
-            const {name} = googleData;
-            userWithEmail = await createUser({name, password, email})
-        } else {
+        if (!userWithEmail) {
+            if (googleData) {
+                const {name} = googleData;
+                userWithEmail = await createUser({name, password, email})
+            } else {
+                return next(new ErrorException(ErrorCode.Unauthenticated));
+            }
+        }
+
+        if (userWithEmail.status === Status.Block) {
+            return next(new ErrorException(ErrorCode.Blocked));
+        }
+
+        const validPassword = await comparePassword(password, userWithEmail.password);
+
+        if (!validPassword) {
             return next(new ErrorException(ErrorCode.Unauthenticated));
         }
+
+        const token = generateAuthToken(userWithEmail);
+
+        const userAuthData : LoginResponseBodyType = {
+            id: userWithEmail._id.toString(),
+            name: userWithEmail.name,
+            access: userWithEmail.access,
+            token,
+        }
+
+        res.send(userAuthData);
+    }catch (error) {
+        return next(new ErrorException(ErrorCode.UnknownError, {error}));
     }
-
-    if (userWithEmail.status === Status.Block) {
-        return next(new ErrorException(ErrorCode.Blocked));
-    }
-
-    const validPassword = await comparePassword(password, userWithEmail.password);
-
-    if (!validPassword) {
-        return next(new ErrorException(ErrorCode.Unauthenticated));
-    }
-
-    const token = generateAuthToken(userWithEmail);
-
-    const userAuthData : LoginResponseBodyType = {
-        id: userWithEmail._id.toString(),
-        name: userWithEmail.name,
-        access: userWithEmail.access,
-        token,
-    }
-
-    res.send(userAuthData);
 }
-
 
 export const githubLogin = async (
     req: Request<{}, {}, GithubLoginRequestType>,
@@ -136,7 +139,6 @@ export const githubLogin = async (
 
         res.send(userAuthData);
     } catch (error) {
-        console.log(error)
         return next(new ErrorException(ErrorCode.UnknownError, {error}));
     }
 }

@@ -1,5 +1,7 @@
 import {model, Model, Schema, Types } from 'mongoose';
 import {FieldType} from "./Collection";
+import CommentModel from "./Comment";
+import LikeModel from './like';
 
 export type ItemFieldType = FieldType & { value: string | Date | boolean | number };
 
@@ -27,6 +29,15 @@ const ItemSchema = new Schema<ItemSchemaType>(
     },
     { collection: 'items', timestamps: true },
 );
+
+ItemSchema.pre<any>('deleteMany', async function cb(next) {
+
+    const deletedItemIdsArray = this._conditions._id.$in;
+
+    await CommentModel.deleteMany({ item: { $in: deletedItemIdsArray } });
+    await LikeModel.deleteMany({ item: { $in: deletedItemIdsArray } });
+    next();
+});
 
 const ItemModel: Model<ItemSchemaType> = model('Item', ItemSchema);
 

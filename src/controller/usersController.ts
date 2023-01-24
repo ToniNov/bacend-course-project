@@ -25,6 +25,7 @@ export const getUsers = async (
 
         page = Number(page);
         limit = Number(limit);
+
         const users = await UserModel.find()
             .limit(limit)
             .skip((page - 1) * limit)

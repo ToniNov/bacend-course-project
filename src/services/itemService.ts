@@ -55,8 +55,9 @@ export const countItem = async (tagDb: any ) => {
     }
 }
 
-export const findLimitCollection = async (id: string, pageNum: number, limitNum: number) => {
+export const findLimitCollection = async (id: string, limitNum: number, pageNum: number, ) => {
     try {
+
         return await ItemModel.find({collections: id})
             .limit(limitNum)
             .skip((pageNum - 1) * limitNum)
@@ -64,6 +65,7 @@ export const findLimitCollection = async (id: string, pageNum: number, limitNum:
                 tags: TagSchemaType[];
             }>('tags')
             .exec();
+
     } catch (error) {
         throw new Error()
     }
