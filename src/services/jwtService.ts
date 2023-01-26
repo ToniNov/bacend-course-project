@@ -5,7 +5,7 @@ import { ErrorException } from '../error-handler/error-exception';
 import { UserSchemaType } from "../models/User";
 import { TokenPayloadType } from '../types/AuthTypes';
 
-const jwtKey = process.env.JWT_SECRET!
+const jwtKey = "secret"
 
 export const generateAuthToken = (user: UserSchemaType): string => {
     const { _id, name, access } = user;
