@@ -5,11 +5,11 @@ import { ErrorException } from '../error-handler/error-exception';
 import { UserSchemaType } from "../models/User";
 import { TokenPayloadType } from '../types/AuthTypes';
 
-const jwtKey = "secret"
+const JWT_KEY = process.env.JWT_SECRET!
 
 export const generateAuthToken = (user: UserSchemaType): string => {
     const { _id, name, access } = user;
-    const token = jwt.sign({ _id: _id.toString(), name, access }, jwtKey, {
+    const token = jwt.sign({ _id: _id.toString(), name, access }, JWT_KEY, {
         expiresIn: '7d',
     });
 
@@ -18,7 +18,7 @@ export const generateAuthToken = (user: UserSchemaType): string => {
 
 export const verifyToken = (token: string): TokenPayloadType => {
     try {
-        const tokenPayload = jwt.verify(token, jwtKey);
+        const tokenPayload = jwt.verify(token, JWT_KEY);
 
         return tokenPayload as TokenPayloadType;
     } catch (error) {

@@ -1,4 +1,6 @@
 import {NextFunction, Request, Response} from 'express';
+import axios from "axios";
+
 import {ErrorCode} from "../error-handler/error-code";
 import {ErrorException} from "../error-handler/error-exception";
 import {STATUS_CODES} from "../enum/statusCodes";
@@ -18,13 +20,10 @@ import {
 import {comparePassword} from "../utils/password-hash";
 import {generateAuthToken} from '../services/jwtService';
 import {Status} from "../enum/status";
-import axios from "axios";
 
 
-const GITHUB_CLIENT_ID="c127185d72a9a98c58eb"
-const GITHUB_SECRET="551d549915e022543aa061f502ed7082d16eb17e"
-
-console.log()
+const GITHUB_CLIENT_ID=process.env.GITHUB_CLIENT_ID!
+const GITHUB_SECRET=process.env.GITHUB_SECRET!
 
 export const signup = async (
     req: Request<{}, {}, SignUpRequestBodyType>,
