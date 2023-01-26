@@ -1,12 +1,15 @@
 import http from 'http';
+import dotenv from 'dotenv';
 import cors from 'cors';
-import {config} from 'dotenv';
 import express, {Application, Request, Response} from 'express';
 import mongoose from "mongoose";
 import { Server } from 'socket.io';
 
 import {connect} from './database/Connection'
-
+import { CommentResponseType } from './types/CommentsType';
+import { UserModel } from './models/User';
+import CommentModel from './models/Comment';
+import {errorHandler} from "./error-handler/error-handler";
 import {Path} from "./enum/path";
 import authorization from "./routes/authorization"
 import collections from "./routes/collection";
@@ -15,14 +18,11 @@ import tags from "./routes/tags";
 import users from "./routes/users";
 import likes from './routes/likes';
 import comments from './routes/comment';
-import { CommentResponseType } from './types/CommentsType';
-import { UserModel } from './models/User';
-import CommentModel from './models/Comment';
-import {getTopics} from "./controller/topicController";
+import topic from './routes/topics';
 import search from "./routes/search";
-import {errorHandler} from "./error-handler/error-handler";
 
-config();
+dotenv.config();
+
 mongoose.set('strictQuery', true);
 
 const DEFAULT_PORT = 7654;
@@ -44,14 +44,17 @@ app.use(cors({
 app.use(express.urlencoded({extended: true,}));
 app.use(express.json());
 
-connect();
+async function run() {
+    await connect();
+}
+run().catch(err => console.log(err));
 
 app.get('/', (req: Request, res: Response) => {
     res.send('Hello express!');
 });
 
 app.use(Path.Auth, authorization)
-app.use(Path.Topics, getTopics)
+app.use(Path.Topics, topic)
 app.use(Path.Collection, collections)
 app.use(Path.Items, items)
 app.use(Path.Tags, tags)
