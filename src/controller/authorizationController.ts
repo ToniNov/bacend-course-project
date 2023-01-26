@@ -24,6 +24,8 @@ import axios from "axios";
 const GITHUB_CLIENT_ID="c127185d72a9a98c58eb"
 const GITHUB_SECRET="551d549915e022543aa061f502ed7082d16eb17e"
 
+console.log()
+
 export const signup = async (
     req: Request<{}, {}, SignUpRequestBodyType>,
     res: Response,
