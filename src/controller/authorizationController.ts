@@ -20,6 +20,10 @@ import {generateAuthToken} from '../services/jwtService';
 import {Status} from "../enum/status";
 import axios from "axios";
 
+
+const GITHUB_CLIENT_ID="c127185d72a9a98c58eb"
+const GITHUB_SECRET="551d549915e022543aa061f502ed7082d16eb17e"
+
 export const signup = async (
     req: Request<{}, {}, SignUpRequestBodyType>,
     res: Response,
@@ -95,7 +99,7 @@ export const githubLogin = async (
         const {code} = req.body;
 
         const gitAccessTokenData = await axios.post(
-            `https://github.com/login/oauth/access_token?client_id=${process.env.GITHUB_CLIENT_ID}&client_secret=${process.env.GITHUB_SECRET}&code=${code}`,
+            `https://github.com/login/oauth/access_token?client_id=${GITHUB_CLIENT_ID}&client_secret=${GITHUB_SECRET}&code=${code}`,
             {},
             {
                 headers: {
